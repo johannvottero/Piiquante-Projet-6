@@ -1,4 +1,4 @@
-const Sauces = require('../models/sauces');
+const sauces = require('../models/sauces');
 const fs = require('fs');
 
 exports.createSauces = (req, res, next) => {
@@ -76,7 +76,7 @@ exports.deleteSauces = (req, res, next) => {
   );
 };
  */
-exports.getAllStuff = (req, res, next) => {
+exports.getAllSauces = (req, res, next) => {
   sauces.find().then(
     (sauces) => {
       res.status(200).json(sauces);

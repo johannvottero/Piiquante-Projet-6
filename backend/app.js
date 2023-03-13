@@ -1,8 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoSanitize = require('express-mongo-sanitize');
 const mongoose = require('mongoose');
 const path = require('path');
 require('dotenv').config();
+const rateLimit = require('express-rate-limit');
+
 
 const app = express();
 
@@ -13,10 +16,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// login to database
 /* console.log(process.env) */
 mongoose.connect('mongodb+srv://johannvottero:ZWm828wQUvJQqQJ8@cluster0.uhxqqd7.mongodb.net/?retryWrites=true&w=majority',
 /* mongoose.connect('mongodb+srv://' + process.env.DB_USER + ':' + process.env.DB_PASS + '@cluster0.uhxqqd7.mongodb.net/?retryWrites=true&w=majority', */
-
+/* mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}`, */
 
 { useNewUrlParser: true, useUnifiedTopology: true })
 .then(() => console.log('Connexion à MongoDB réussie !'))

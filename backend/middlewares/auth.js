@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config()
+const rateLimit = require('express-rate-limit')
+const dotenv = require("dotenv").config();
 
 module.exports = (req, res, next) => {
 	try {

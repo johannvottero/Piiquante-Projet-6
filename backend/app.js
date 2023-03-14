@@ -1,30 +1,41 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoSanitize = require('express-mongo-sanitize');
 const mongoose = require('mongoose');
 const path = require('path');
-require('dotenv').config();
 const rateLimit = require('express-rate-limit');
-
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
+require('dotenv').config();
 
 const app = express();
 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  next();
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+	next();
 });
 
-// login to database
-/* console.log(process.env) */
-mongoose.connect('mongodb+srv://johannvottero:ZWm828wQUvJQqQJ8@cluster0.uhxqqd7.mongodb.net/?retryWrites=true&w=majority',
-/* mongoose.connect('mongodb+srv://' + process.env.DB_USER + ':' + process.env.DB_PASS + '@cluster0.uhxqqd7.mongodb.net/?retryWrites=true&w=majority', */
-/* mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}`, */
-
+// Login to database
+mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/?retryWrites=true&w=majority`,
 { useNewUrlParser: true, useUnifiedTopology: true })
 .then(() => console.log('Connexion à MongoDB réussie !'))
 .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+// express-rate-limit
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000,			// 15 minutes
+	max: 200,							// Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	standardHeaders: true,				// Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false,				// Disable the `X-RateLimit-*` headers
+})
+app.use(limiter)
+
+// express-mongo-sanitize
+app.use(mongoSanitize());
+
+// helmet
+app.use(helmet({crossOriginResourcePolicy: false}));
 
 app.use(express.json());
 

@@ -1,6 +1,7 @@
 const Sauce = require('../models/sauces');
 const fs = require('fs');
 
+
 // Create sauce
 exports.createSauce = (req, res, next) => {
 	const sauceObject = JSON.parse(req.body.sauce);
@@ -72,12 +73,12 @@ exports.likeSauce = (req, res, next) => {
 		// User likes the sauce
 		Sauce.updateOne({_id: req.params.id}, { $inc: { likes: 1}, $push: { usersLiked: req.body.userId}, _id: req.params.id })
 		.then(() => res.status(200).json({ message: "You liked this sauce" }))
-		.catch( error => res.status(400).json({ error }))
+		.catch( error => res.status(500).json({ error }))
 	} else if(like === -1) {
 		// User dislikes the sauce
 		Sauce.updateOne({_id: req.params.id}, { $inc: { dislikes: 1}, $push: { usersDisliked: req.body.userId}, _id: req.params.id })
 		.then(() => res.status(200).json({ message: "You disliked this sauce" }))
-		.catch( error => res.status(400).json({ error }))
+		.catch( error => res.status(500).json({ error }))
 	} else {
 		// User cancel like
 		Sauce.findOne( {_id: req.params.id})
@@ -85,13 +86,13 @@ exports.likeSauce = (req, res, next) => {
 			if(sauce.usersLiked.indexOf(req.body.userId)!== -1) {
 				Sauce.updateOne({_id: req.params.id}, { $inc: { likes: -1}, $pull: { usersLiked: req.body.userId}, _id: req.params.id })
 				.then(() => res.status(200).json({ message: "You don't like this sauce anymore" }))
-				.catch( error => res.status(400).json({ error }))
+				.catch( error => res.status(500).json({ error }))
 			}
 			else if(sauce.usersDisliked.indexOf(req.body.userId)!== -1) {
 				// User cancel dislike
 				Sauce.updateOne( {_id: req.params.id}, { $inc: { dislikes: -1 }, $pull: { usersDisliked: req.body.userId}, _id: req.params.id})
 				.then(() => res.status(200).json({ message: "You don't dislike this sauce anymore" }))
-				.catch(error => res.status(400).json({ error }))
+				.catch(error => res.status(500).json({ error }))
 			}
 		})
 		.catch( error => res.status(400).json({ error }))
